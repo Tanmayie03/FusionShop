@@ -36,7 +36,6 @@ const registerUser = async (req, res) => {
       email: body.email,
       password: body.password,
     });
-    const userId = user._id;
     await newUser.save();
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
 
@@ -52,7 +51,7 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(411).json({ message: "error.message" });
+    return res.status(411).json({ message: error.message });
   }
 };
 const adminLogin = async (req, res) => {

@@ -49,7 +49,9 @@ const displayProduct = async (req, res) => {
 const removeProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const deletedProduct = await productModel.findOneAndDelete(productId);
+    const deletedProduct = await productModel.findOneAndDelete({
+      id: productId,
+    });
     if (!deletedProduct) {
       return res.status(404).json({
         success: false,
@@ -71,9 +73,9 @@ const removeProduct = async (req, res) => {
 };
 const singleProduct = async (req, res) => {
   try {
-    const { productId } = req.query;
-    console.log("Product ID:", productId);
+    const productId = req.params.id;
     const product = await productModel.findOne({ id: productId });
+    console.log("Fetched Product:", product);
 
     if (!product) {
       return res.status(404).json({
