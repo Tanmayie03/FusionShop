@@ -26,19 +26,19 @@ export const loginUser = createAsyncThunk("/auth/loginUser", async (data) => {
     console.log("Login response data:", response.data);
     if (response.data.success) {
       const authData = { success: true, data: response.data.user };
-      localStorage.setItem("auth", JSON.stringify(authData)); // Save user data
+      localStorage.setItem("auth", JSON.stringify(authData));
     }
 
-    return response.data; // Return the entire response payload
+    return response.data;
   } catch (error) {
     console.error("Login failed:", error.response?.data || error);
     throw error.response?.data || error;
   }
 });
 
-export const logoutUser = () => {
+export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("auth");
-  dispatch(setUser(null)); // Clear Redux state
+  dispatch(setUser(null));
 };
 const authSlice = createSlice({
   name: "auth",

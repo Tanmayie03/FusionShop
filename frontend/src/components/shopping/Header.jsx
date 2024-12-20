@@ -18,20 +18,22 @@ function MenuItems() {
     </nav>
   );
 }
-const dispatch = useDispatch;
-function handleLogout() {
-  dispatch(logoutUser());
-}
 
 const Header = () => {
+  const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    window.location.href = "/auth/login";
   };
 
   return (
@@ -130,7 +132,7 @@ const Header = () => {
                 </li>
                 <li>
                   <button
-                    onClick={handleLogout()}
+                    onClick={handleLogout}
                     className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100">
                     Logout
                   </button>
