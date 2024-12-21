@@ -1,10 +1,23 @@
 import { useState } from "react";
 
-const Filter = () => {
+const Filter = ({ categories, setCategories, setSortType }) => {
   const [showFilter, setShowFilter] = useState(true);
+
+  const toggleCategory = (e) => {
+    if (categories.includes(e.target.value)) {
+      setCategories((prev) => prev.filter((item) => item !== e.target.value));
+    } else {
+      setCategories((prev) => [...prev, e.target.value]);
+    }
+  };
+
+  const handleSortChange = (e) => {
+    setSortType(e.target.value);
+  };
+
   return (
     <div className="rounded-lg shadow-md">
-      <div className="p-4 border-b min-w-56">
+      <div className="p-4 border-b min-w-64">
         <div
           onClick={() => {
             setShowFilter(!showFilter);
@@ -32,20 +45,59 @@ const Filter = () => {
           <p className="mb-3 text-sm font-semibold">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light">
             <p className="flex gap-2">
-              <input className="w-3 " type="checkbox" value={"Men"} /> Men
+              <input
+                className="w-3 "
+                type="checkbox"
+                value={"Men"}
+                onChange={toggleCategory}
+                checked={categories.includes("Men")}
+              />{" "}
+              Men
             </p>
             <p className="flex gap-2">
-              <input className="w-3 " type="checkbox" value={"Women"} /> Women
+              <input
+                className="w-3 "
+                type="checkbox"
+                value={"Women"}
+                onChange={toggleCategory}
+                checked={categories.includes("Women")}
+              />{" "}
+              Women
             </p>
             <p className="flex gap-2">
-              <input className="w-3 " type="checkbox" value={"Jewellry"} />{" "}
+              <input
+                className="w-3 "
+                type="checkbox"
+                value={"Jewellry"}
+                onChange={toggleCategory}
+                checked={categories.includes("Jewellry")}
+              />{" "}
               Jewellry
             </p>
             <p className="flex gap-2">
-              <input className="w-3 " type="checkbox" value={"Electronics"} />{" "}
+              <input
+                className="w-3 "
+                type="checkbox"
+                value={"Electronics"}
+                onChange={toggleCategory}
+                checked={categories.includes("Electonics")}
+              />{" "}
               Electronics
             </p>
           </div>
+        </div>
+        <div
+          className={`border border-gray-300 pl-5 py-3 mt-6 ${
+            showFilter ? "" : "hidden"
+          } sm:block`}>
+          <p className="mb-3 text-sm font-semibold">Sort By</p>
+          <select
+            className="px-2 text-sm border-2 border-gray-300"
+            onChange={handleSortChange}>
+            <option value="relevant">Relevent</option>
+            <option value="low-high">Low to High</option>
+            <option value="high-low">High to Low</option>
+          </select>
         </div>
       </div>
     </div>
