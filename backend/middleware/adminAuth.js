@@ -7,8 +7,8 @@ const adminAuth = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Your JWT secret here
-    req.user = decoded; // Attach user data to the request object
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: "Not Authorized" });

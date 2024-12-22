@@ -14,7 +14,7 @@ const Listing = () => {
         "http://localhost:5000/api/product/displayProducts"
       );
       setProducts(response.data.data);
-      setFilteredProducts(response.data.data); // Initialize filtered products
+      setFilteredProducts(response.data.data);
     } catch (error) {
       console.error("Error fetching products:", error.response || error);
     }
@@ -26,13 +26,23 @@ const Listing = () => {
 
   const applyFiltersAndSorting = () => {
     let updatedProducts = [...products];
-    if (categories.length > 0) {
-      updatedProducts = updatedProducts.filter((product) =>
-        categories.includes(product.category)
-      );
-    }
     console.log("Categories selected:", categories);
-    console.log("Filtered products:", updatedProducts);
+    console.log("Initial products:", updatedProducts);
+
+    if (categories.length > 0) {
+      updatedProducts = updatedProducts.filter((product) => {
+        console.log(
+          "Checking product:",
+          product.title,
+          "Category:",
+          product.category
+        );
+
+        return categories.some((category) => category === product.category);
+      });
+    }
+
+    console.log("Filtered products after category filter:", updatedProducts);
     if (sortType === "low-high") {
       updatedProducts.sort((a, b) => a.price - b.price);
     } else if (sortType === "high-low") {
@@ -41,6 +51,7 @@ const Listing = () => {
 
     setFilteredProducts(updatedProducts);
   };
+
   useEffect(() => {
     applyFiltersAndSorting();
   }, [categories, sortType]);

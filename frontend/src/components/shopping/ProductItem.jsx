@@ -1,11 +1,11 @@
+import { Link } from "react-router-dom";
+
 const ProductItem = ({ products }) => {
   return (
     <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 gap-y-6">
-      {products.map((product) => {
-        return (
-          <div
-            key={product._id}
-            className="p-4 bg-white rounded-md hover:shadow-md">
+      {products.map((product) => (
+        <Link to={`/shop/${product.id}`} key={product._id}>
+          <div className="p-4 bg-white rounded-md cursor-pointer hover:shadow-md">
             <img
               src={product.image}
               alt={product.title}
@@ -37,8 +37,8 @@ const ProductItem = ({ products }) => {
               </svg>
             </div>
           </div>
-        );
-      })}
+        </Link>
+      ))}
     </div>
   );
 };

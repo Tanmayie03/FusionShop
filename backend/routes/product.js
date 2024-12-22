@@ -10,8 +10,9 @@ import adminAuth from "../middleware/adminAuth.js";
 const productRouter = express.Router();
 productRouter.post("/add", adminAuth, addProduct);
 productRouter.get("/display", adminAuth, displayProduct);
-productRouter.get("/displayProducts", displayProduct);
 productRouter.delete("/remove/:id", adminAuth, removeProduct);
 productRouter.get("/single/:id", adminAuth, singleProduct);
+productRouter.get("/displayProducts", displayProduct);
+productRouter.get("/singleProduct/:id", singleProduct);
 
 export default productRouter;

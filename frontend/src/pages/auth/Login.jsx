@@ -23,7 +23,7 @@ const Login = () => {
     dispatch(loginUser(formData)).then((response) => {
       if (response?.payload?.success) {
         console.log("Login successful! Navigating to the shop...");
-        navigate("/shop/home"); // Navigate to the shopping home page
+        navigate("/shop");
       } else {
         console.error("Login failed:", response?.payload);
         alert("Invalid login credentials");

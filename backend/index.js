@@ -5,6 +5,7 @@ import "dotenv/config";
 import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/user.js";
 import productRouter from "./routes/product.js";
+import cartRouter from "./routes/cart.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -28,4 +29,5 @@ app.use(
 
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
+app.use("/api/cart", cartRouter);
 app.listen(port, () => console.log("Server started on :  " + port));

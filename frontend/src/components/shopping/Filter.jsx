@@ -48,9 +48,9 @@ const Filter = ({ categories, setCategories, setSortType }) => {
               <input
                 className="w-3 "
                 type="checkbox"
-                value={"Men"}
+                value={"men's clothing"}
                 onChange={toggleCategory}
-                checked={categories.includes("Men")}
+                checked={categories.includes("men's clothing")}
               />{" "}
               Men
             </p>
@@ -58,9 +58,9 @@ const Filter = ({ categories, setCategories, setSortType }) => {
               <input
                 className="w-3 "
                 type="checkbox"
-                value={"Women"}
+                value={"women's clothing"}
                 onChange={toggleCategory}
-                checked={categories.includes("Women")}
+                checked={categories.includes("women's clothing")}
               />{" "}
               Women
             </p>
@@ -68,9 +68,9 @@ const Filter = ({ categories, setCategories, setSortType }) => {
               <input
                 className="w-3 "
                 type="checkbox"
-                value={"Jewellry"}
+                value={"jewelry"}
                 onChange={toggleCategory}
-                checked={categories.includes("Jewellry")}
+                checked={categories.includes("jewelry")}
               />{" "}
               Jewellry
             </p>
@@ -78,9 +78,9 @@ const Filter = ({ categories, setCategories, setSortType }) => {
               <input
                 className="w-3 "
                 type="checkbox"
-                value={"Electronics"}
+                value={"electronics"}
                 onChange={toggleCategory}
-                checked={categories.includes("Electonics")}
+                checked={categories.includes("electronics")}
               />{" "}
               Electronics
             </p>
@@ -90,7 +90,7 @@ const Filter = ({ categories, setCategories, setSortType }) => {
           className={`border border-gray-300 pl-5 py-3 mt-6 ${
             showFilter ? "" : "hidden"
           } sm:block`}>
-          <p className="mb-3 text-sm font-semibold">Sort By</p>
+          <p className="mb-3 text-sm font-semibold">SORT BY</p>
           <select
             className="px-2 text-sm border-2 border-gray-300"
             onChange={handleSortChange}>
