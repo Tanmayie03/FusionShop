@@ -10,6 +10,8 @@ const ProductItem = () => {
   const { product, isLoading, error } = useSelector(
     (state) => state.shoppingProducts
   );
+  const user = useSelector((state) => state.auth.user);
+  console.log("User:", user);
   const handleAddtoCart = (productId) => {
     console.log(`Adding product ${productId} to cart`);
     dispatch(

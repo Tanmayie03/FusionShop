@@ -75,7 +75,6 @@ const singleProduct = async (req, res) => {
   try {
     const productId = req.params.id;
     const product = await productModel.findOne({ id: productId });
-    console.log("Fetched Product:", product);
 
     if (!product) {
       return res.status(404).json({

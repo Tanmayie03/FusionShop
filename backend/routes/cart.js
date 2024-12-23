@@ -5,8 +5,7 @@ import {
   fetchCartItems,
   updateCartItemQty,
 } from "../controllers/cartController.js";
-
-import authenticateUser from "../middleware/authMiddleware.js";
+import authenticateUser from "../middleware/authenticateUser.js";
 
 const cartRouter = express.Router();
 

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { shoppingViewMenu } from "../../config";
 import { logoutUser } from "../../store/auth";
+import { fetchCartItems } from "../../store/shop/cartSlice";
 
 function MenuItems() {
   return (
@@ -46,6 +47,9 @@ const Header = () => {
     dispatch(logoutUser());
     window.location.href = "/auth/login";
   };
+  useEffect(() => {
+    dispatch(fetchCartItems());
+  }, [dispatch]);
 
   return (
     <div className="sticky top-0 z-40 w-full border-b shadow-md bg-gray-50 ">

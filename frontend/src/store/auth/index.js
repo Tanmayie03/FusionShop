@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-const storedAuth = JSON.parse(localStorage.getItem("auth"));
-
+const storedAuth = JSON.parse(localStorage.getItem("auth") || "{}");
+console.log("Stored Auth from localStorage:", storedAuth);
 const initialState = {
   isAuthenticated: storedAuth?.success || false,
   isLoading: true,
@@ -25,12 +25,18 @@ export const loginUser = createAsyncThunk("/auth/loginUser", async (data) => {
   try {
     const response = await axios.post("/api/user/login", data);
     console.log("Login response data:", response.data);
-    if (response.data.success) {
-      const authData = { success: true, data: response.data.user };
-      localStorage.setItem("auth", JSON.stringify(authData));
-    }
 
-    return response.data;
+    const { success, token, user } = response.data || {};
+
+    if (success && token) {
+      const authData = { success, user: user || null }; // Use null if user data is missing
+      localStorage.setItem("auth", JSON.stringify(authData));
+      localStorage.setItem("token", token);
+
+      return { success, user: user || null, token }; // Return null for user if not available
+    } else {
+      throw new Error("Login failed, missing user or token");
+    }
   } catch (error) {
     console.error("Login failed:", error.response?.data || error);
     throw error.response?.data || error;
@@ -39,6 +45,7 @@ export const loginUser = createAsyncThunk("/auth/loginUser", async (data) => {
 
 export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("auth");
+  localStorage.removeItem("token");
   dispatch(setUser(null));
 };
 const authSlice = createSlice({
@@ -56,8 +63,8 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload; // Ensure user data is returned and used
-        state.isAuthenticated = true; // Set authentication status
+        state.user = action.payload;
+        state.isAuthenticated = true;
       })
 
       .addCase(registerUser.rejected, (state) => {
@@ -70,10 +77,21 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.data; // Ensure user data is returned and used
-        state.isAuthenticated = action.payload.success; // Set authentication status
-      })
+        const { success, token, user } = action.payload || {};
 
+        if (success && token) {
+          state.isAuthenticated = true;
+          state.user = user || null; // Set user to null if not available
+          localStorage.setItem(
+            "auth",
+            JSON.stringify({ success, user: user || null })
+          );
+          localStorage.setItem("token", token);
+        } else {
+          state.isAuthenticated = false;
+          state.user = null;
+        }
+      })
       .addCase(loginUser.rejected, (state) => {
         state.isLoading = true;
         state.user = null;

@@ -10,26 +10,31 @@ const addToCart = async (req, res) => {
         message: "Invalid data provided!",
       });
     }
-    const product = await productModel.findById(productId);
+
+    const product = await productModel.findOne({ id: productId });
     if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
     }
+
     let cart = await cartModel.findOne({ userId });
 
     if (!cart) {
       cart = new cartModel({ userId, items: [] });
     }
+
     const findCurrentProductIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === productId
+      (item) => item.productId === productId
     );
+
     if (findCurrentProductIndex === -1) {
       cart.items.push({ productId, quantity });
     } else {
       cart.items[findCurrentProductIndex].quantity += quantity;
     }
+
     await cart.save();
     res.status(200).json({
       success: true,
@@ -54,56 +59,6 @@ const fetchCartItems = async (req, res) => {
       });
     }
 
-    const cart = await cartModel.findOne({ userId }).populate({
-      path: "item.productId",
-      select: "image, title, price sellPrice",
-    });
-    if (!cart) {
-      return res.status(404).json({
-        success: false,
-        message: "Cart not found",
-      });
-    }
-    const validItems = cart.items.filter(
-      (productItem) => productItem.productId
-    );
-    if (validItems.length < cart.items.length) {
-      cart.items = validItems;
-      await cart.save();
-    }
-    const populateCartItems = validItems.map((item) => ({
-      productId: item.productId.id,
-      image: item.productId.image,
-      title: item.productId.title,
-      price: item.productId.price,
-      sellPrice: item.productId.sellPrice,
-      quantity: item.quantity,
-    }));
-
-    res.status(200).json({
-      success: true,
-      message: "All Cart Product retrieved successfully",
-      data: { ...cart._doc, items: populateCartItems },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to add product",
-      error,
-    });
-  }
-};
-
-const updateCartItemQty = async (req, res) => {
-  try {
-    const { userId, productId, quantity } = req.body;
-
-    if (!userId || !productId || quantity <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid data provided!",
-      });
-    }
     const cart = await cartModel.findOne({ userId });
     if (!cart) {
       return res.status(404).json({
@@ -111,45 +66,70 @@ const updateCartItemQty = async (req, res) => {
         message: "Cart not found",
       });
     }
-    const validItems = cart.items.filter(
-      (productItem) => productItem.productId
-    );
+    const productIds = cart.items.map((item) => item.productId); // Extract productIds
+    const products = await productModel.find({ id: { $in: productIds } });
 
-    if (findCurrentProductIndex === -1) {
-      return res.status(404).json({
-        success: false,
-        message: "Cart item not found",
-      });
-    }
-
-    cart.items[findCurrentProductIndex].quantity = quantity;
-    await cart.save();
-
-    await cart.populate({
-      path: "items.productId",
-      select: "image, title, price sellPrice",
+    const populateCartItems = cart.items.map((item) => {
+      const product = products.find((prod) => prod.id === item.productId);
+      return {
+        productId: product.id,
+        image: product.image,
+        title: product.title,
+        price: product.price,
+        quantity: item.quantity,
+      };
     });
-
-    const populateCartItems = validItems.map((item) => ({
-      productId: item.productId ? item.productId.id : null,
-      image: item.image ? item.productId.image : null,
-      title: item.title ? item.productId.title : null,
-      price: item.price ? item.productId.price : null,
-      sellPrice: item.sellPrice ? item.productId.sellPrice : null,
-      quantity: item.quantity,
-    }));
 
     res.status(200).json({
       success: true,
-      message: "Product updated to cart successfully",
+      message: "All Cart Products retrieved successfully",
       data: { ...cart._doc, items: populateCartItems },
     });
   } catch (error) {
+    console.error("Error fetching cart items:", error); // Log error to the server console
     res.status(500).json({
       success: false,
-      message: "Failed to add product",
-      error,
+      message: "Failed to fetch cart items",
+      error: error.message || error,
     });
+  }
+};
+
+const updateCartItemQty = async (req, res) => {
+  try {
+    const { userId, productId, quantity } = req.body;
+    if (!userId || !productId || quantity <= 0) {
+      return res.status(400).json({ success: false, message: "Invalid data" });
+    }
+
+    const cart = await cartModel.findOne({ userId });
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+
+    const productExists = await productModel.findOne({ id: productId });
+    if (!productExists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId === productId
+    );
+    if (itemIndex === -1) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Item not in cart" });
+    }
+
+    cart.items[itemIndex].quantity = quantity;
+    await cart.save();
+    res.status(200).json({ success: true, message: "Cart updated", cart });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
 
@@ -162,45 +142,51 @@ const deleteCartItem = async (req, res) => {
         message: "Invalid data provided!",
       });
     }
+
     const cart = await cartModel.findOne({ userId }).populate({
-      path: "item.productId",
-      select: "image, title, price sellPrice",
+      path: "items.productId",
+      select: "image title price salePrice",
     });
+
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "Cart not found",
+        message: "Cart not found!",
       });
     }
 
     cart.items = cart.items.filter(
       (item) => item.productId.id.toString() !== productId
     );
+
     await cart.save();
-    await Cart.populate({
-      path: "item.productId",
-      select: "image, title, price sellPrice",
+
+    await cart.populate({
+      path: "items.productId",
+      select: "image title price salePrice",
     });
 
-    const populateCartItems = validItems.map((item) => ({
+    const populateCartItems = cart.items.map((item) => ({
       productId: item.productId ? item.productId.id : null,
       image: item.productId ? item.productId.image : null,
-      title: item.productId ? item.productId.title : null,
+      title: item.productId ? item.productId.title : "Product not found",
       price: item.productId ? item.productId.price : null,
-      sellPrice: item.productId ? item.productId.sellPrice : null,
+      salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,
     }));
 
     res.status(200).json({
       success: true,
-      message: "Product removed from cart successfully",
-      data: cart.items,
+      data: {
+        ...cart._doc,
+        items: populateCartItems,
+      },
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
-      message: "Failed to add product",
-      error,
+      message: "Error",
     });
   }
 };
