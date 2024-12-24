@@ -2,18 +2,17 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-  userId: null,
   isLoading: false,
   cartItems: [],
   error: null,
 };
 
+// Add item to the cart
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
       const data = { userId, productId, quantity };
-      console.log("Request Data:", data);
       const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:5000/api/cart/add",
@@ -33,6 +32,7 @@ export const addToCart = createAsyncThunk(
   }
 );
 
+// Fetch all items in the cart
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId, { rejectWithValue }) => {
@@ -46,27 +46,19 @@ export const fetchCartItems = createAsyncThunk(
           },
         }
       );
-      console.log("API Response:", response.data);
-      return response.data.data.items;
+      return response.data.data.items || []; // Adjust based on actual response
     } catch (error) {
-      console.error(
-        "Error Fetching Cart Items:",
-        error.response?.data || error.message
-      );
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
+// Delete an item from the cart
 export const deleteCartItems = createAsyncThunk(
   "cart/deleteCartItems",
   async ({ userId, productId }, { rejectWithValue }) => {
-    if (!userId || !productId) {
-      return rejectWithValue("Invalid userId or productId.");
-    }
-
-    const token = localStorage.getItem("token");
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.delete(
         `http://localhost:5000/api/cart/${userId}/${productId}`,
         {
@@ -77,11 +69,14 @@ export const deleteCartItems = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
     }
   }
 );
 
+// Update cart item quantity
 export const updateCartItemQty = createAsyncThunk(
   "cart/updateCartItemQty",
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
@@ -105,22 +100,19 @@ const shopCartSlice = createSlice({
   reducer: {},
   extraReducers: (builder) => {
     builder
-
       .addCase(addToCart.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
+        state.error = null; // Clear previous error
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data?.items || action.payload.items; // Ensure correct structure
+        state.cartItems = action.payload.data || action.payload.items; // Adjust based on API response
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.isLoading = false;
         state.cartItems = [];
         state.error = action.payload || action.error.message;
-        console.error(action.error.message);
       })
-
       .addCase(fetchCartItems.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -133,27 +125,24 @@ const shopCartSlice = createSlice({
         state.isLoading = false;
         state.cartItems = [];
         state.error = action.payload || action.error.message;
-        console.error("Error Fetching Cart Items:", action.error.message);
       })
-
       .addCase(deleteCartItems.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(deleteCartItems.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data?.items || state.cartItems;
+        state.cartItems = action.payload.data?.items || action.payload.items;
       })
       .addCase(deleteCartItems.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || action.error.message;
       })
-
       .addCase(updateCartItemQty.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(updateCartItemQty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data?.items || action.payload.items;
+        state.cartItems = action.payload.data || action.payload.items;
       })
       .addCase(updateCartItemQty.rejected, (state, action) => {
         state.isLoading = false;

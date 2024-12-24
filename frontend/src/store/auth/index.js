@@ -5,7 +5,7 @@ console.log("Stored Auth from localStorage:", storedAuth);
 const initialState = {
   isAuthenticated: storedAuth?.success || false,
   isLoading: true,
-  user: storedAuth?.data || null,
+  user: storedAuth?.user || null,
 };
 
 export const registerUser = createAsyncThunk(
@@ -52,8 +52,13 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (state, action) => {
+    setUser(state, action) {
       state.user = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload));
+    },
+    removeUser(state) {
+      state.user = null;
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
@@ -81,7 +86,7 @@ const authSlice = createSlice({
 
         if (success && token) {
           state.isAuthenticated = true;
-          state.user = user || null; // Set user to null if not available
+          state.user = user || null;
           localStorage.setItem(
             "auth",
             JSON.stringify({ success, user: user || null })

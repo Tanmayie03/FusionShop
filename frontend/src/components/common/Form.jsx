@@ -6,7 +6,7 @@ const Form = ({ formControls, onSubmit, formData, setFormData }) => {
       const fieldValue = e.target[control.name]?.value || "";
       updatedFormData[control.name] = fieldValue;
     });
-    onSubmit(updatedFormData);
+    onSubmit(e, updatedFormData);
   };
   return (
     <form onSubmit={handleSubmit} className="w-full ">
@@ -29,7 +29,7 @@ const Form = ({ formControls, onSubmit, formData, setFormData }) => {
         ))}
         <button
           type="submit"
-          className="px-4 py-2 mt-4 font-semibold text-white bg-blue-900 rounded hover:bg-blue-800">
+          className="px-4 py-2 mt-4 font-semibold text-white bg-gray-700 rounded hover:bg-gray-800">
           Submit
         </button>
       </div>

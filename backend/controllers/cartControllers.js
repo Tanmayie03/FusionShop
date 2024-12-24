@@ -102,7 +102,7 @@ const updateCartItemQty = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid data" });
     }
 
-    const cart = await cartModel.findOne({ userId });
+    const cart = await cartModel.findOne({ userId: ObjectId(userId) });
     if (!cart) {
       return res
         .status(404)
@@ -143,10 +143,12 @@ const deleteCartItem = async (req, res) => {
       });
     }
 
-    const cart = await cartModel.findOne({ userId }).populate({
-      path: "items.productId",
-      select: "image title price salePrice",
-    });
+    const cart = await cartModel
+      .findOne({ userId: ObjectId(userId) })
+      .populate({
+        path: "items.productId",
+        select: "image title price salePrice",
+      });
 
     if (!cart) {
       return res.status(404).json({

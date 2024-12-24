@@ -1,11 +1,12 @@
 import express from "express";
+
+import authenticateUser from "../middleware/authenticateUser.js";
 import {
   addToCart,
   deleteCartItem,
   fetchCartItems,
   updateCartItemQty,
-} from "../controllers/cartController.js";
-import authenticateUser from "../middleware/authenticateUser.js";
+} from "../controllers/cartControllers.js";
 
 const cartRouter = express.Router();
 

@@ -5,16 +5,24 @@ import {
   fetchCartItems,
   updateCartItemQty,
 } from "../../store/shop/cartSlice";
+import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, userId, isLoading, error } = useSelector(
+  const { cartItems, user, isLoading, error } = useSelector(
     (state) => state.shopCart
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userId = user?.id || localStorage.getItem("userId");
 
   function handleCartItemDelete(getCartItem) {
-    dispatch(deleteCartItems({ userId, productId: getCartItem?.productId }));
+    if (userId) {
+      dispatch(deleteCartItems({ userId, productId: getCartItem?.productId }));
+    } else {
+      console.error("User ID is missing for deletion");
+    }
   }
+
   useEffect(() => {
     console.log("User ID at mount:", userId); // Debugging log
     if (userId) {
@@ -161,9 +169,11 @@ const Cart = () => {
           <h1 className="font-semibold">Order Total</h1>
           <h1 className="font-semibold">₹{totalPrice - 518}</h1>
         </div>
-        <button className="w-56 px-6 py-2 my-2 text-center text-white bg-gray-800 rounded-sm">
-          Place Order
-        </button>
+        <Link to="/shop/Checkout">
+          <button className="w-56 px-6 py-2 my-2 text-center text-white bg-gray-800 rounded-sm">
+            Proceed to Checkout
+          </button>
+        </Link>
         <h1 className="pb-4 mt-16 text-sm">
           The price and availability of items at cartify.com are subject to
           change. The Cart is a temporary place to store a list of your items

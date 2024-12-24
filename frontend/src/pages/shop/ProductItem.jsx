@@ -14,9 +14,9 @@ const ProductItem = () => {
   console.log("User:", user);
   const handleAddtoCart = (productId) => {
     console.log(`Adding product ${productId} to cart`);
-    dispatch(
-      addToCart({ userId: user?.id, productId: productId, quantity: 1 })
-    ).then((data) => console.log(data));
+    dispatch(addToCart({ userId: user.id, productId, quantity: 1 })).then(
+      (data) => console.log(data)
+    );
   };
   useEffect(() => {
     dispatch(fetchProductById(productId));
