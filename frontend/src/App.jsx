@@ -17,6 +17,7 @@ import CheckAuth from "./components/common/CheckAuth";
 import { useSelector } from "react-redux";
 import ProductItem from "./pages/shop/ProductItem";
 import Cart from "./components/shopping/Cart";
+import Orders from "./pages/shop/Orders";
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -49,6 +50,7 @@ function App() {
             <Route path="account" element={<Accounts />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="cart" element={<Cart />} />
+            <Route path="orders" element={<Orders />} />
           </Route>
         </Routes>
       </div>

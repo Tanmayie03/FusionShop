@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema({
   paymentMethod: { type: String, required: true },
   totalAmount: { type: Number, required: true },
   payment: { type: Boolean, required: true, default: false },
-  date: { type: Number, required: true, default: false },
+  date: { type: Number, required: true, default: Date.now },
 });
 
 const orderModel = mongoose.model("order", orderSchema);

@@ -5,58 +5,42 @@ import {
   fetchCartItems,
   updateCartItemQty,
 } from "../../store/shop/cartSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, user, isLoading, error } = useSelector(
+  const { cartItems, isLoading, error } = useSelector(
     (state) => state.shopCart
   );
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const userId = user?.id || localStorage.getItem("userId");
 
-  function handleCartItemDelete(getCartItem) {
-    if (userId) {
-      dispatch(deleteCartItems({ userId, productId: getCartItem?.productId }));
-    } else {
-      console.error("User ID is missing for deletion");
-    }
-  }
-
-  useEffect(() => {
-    console.log("User ID at mount:", userId); // Debugging log
-    if (userId) {
-      console.log("Fetching cart items for user:", userId);
-      dispatch(fetchCartItems(userId));
-    } else {
-      console.log("User ID is missing");
-    }
-  }, [dispatch, userId]);
-  console.log("User ID during render:", userId);
-
-  useEffect(() => {
-    if (error) {
-      console.error(
-        "Error fetching cart items:",
-        JSON.stringify(error, null, 2)
-      );
-    }
-  }, [error]);
-
-  if (isLoading) return <p>Loading...</p>;
-  const items = Array.isArray(cartItems) ? cartItems : [];
   const calculateTotalPrice = (items) => {
     return Array.isArray(items)
       ? items.reduce((total, item) => total + item.price * item.quantity, 0)
       : 0;
   };
+  const calculateItemPrice = (item) => {
+    return (item.price * item.quantity).toFixed(2);
+  };
+  const totalPrice = calculateTotalPrice(cartItems);
+  const discount = 518;
+  const finalTotal = totalPrice - discount;
 
-  const totalPrice = calculateTotalPrice(items);
+  const handleCartItemDelete = (getCartItem) => {
+    if (userId) {
+      dispatch(
+        deleteCartItems({ userId: userId, productId: getCartItem?.productId })
+      );
+    } else {
+      console.error("User ID is missing for deletion");
+    }
+  };
 
-  function handleUpdateQuantity(item, action) {
+  const handleUpdateQuantity = (item, action) => {
     const newQuantity =
       action === "increase" ? item.quantity + 1 : item.quantity - 1;
-    if (newQuantity > 0) {
+    if (newQuantity > 0 && newQuantity <= item.stock) {
       dispatch(
         updateCartItemQty({
           userId,
@@ -65,23 +49,42 @@ const Cart = () => {
         })
       );
     } else {
-      console.error("Quantity cannot be less than 1");
+      console.error("Quantity exceeds stock or is less than 1");
     }
-  }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchCartItems(userId));
+    } else {
+      console.error("User ID is missing for fetching cart items");
+    }
+  }, [dispatch, userId]);
+
+  if (isLoading) return <p>Loading...</p>;
+
+  const calculateTotalQuantity = (items) => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  };
+  const items = Array.isArray(cartItems) ? cartItems : [];
+
+  const handleProceedToCheckout = () => {
+    console.log("Proceeding to Checkout");
+  };
 
   return (
-    <div className="flex justify-between gap-8 px-10 py-6">
-      <div className="flex flex-col w-1/2">
-        <h1>Your Cart</h1>
+    <div className="flex flex-col justify-between gap-8 px-10 py-6 lg:flex-row">
+      <div className="flex flex-col lg:w-1/2">
+        <h1 className="text-2xl font-semibold text-gray-700">YOUR CART</h1>
         {items.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
           items.map((item) => (
             <div
               className="flex justify-between gap-4 py-4 border-b"
-              key={item.id}>
-              <div className="flex gap-4">
-                <img src={item.image} className="w-1/4" />
+              key={item.productId}>
+              <div className="flex  gap-4">
+                <img src={item.image} className="w-1/4" alt={item.title} />
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between w-full">
                     <p className="pb-2 text-lg font-semibold">{item.title}</p>
@@ -104,7 +107,9 @@ const Cart = () => {
                       +
                     </button>
                   </div>
-                  <div className="py-2 text-xl font-bold">₹{item.price}</div>
+                  <div className="py-2 text-xl font-bold">
+                    ₹{calculateItemPrice(item)}
+                  </div>
                   <div className="flex pt-4 text-sm font-light">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +152,10 @@ const Cart = () => {
 
       <div className="flex flex-col p-8 lg:w-1/2 bg-gray-50 h-fit">
         <h1 className="pb-4 my-2 text-xl font-semibold border-b border-gray-300 ">
-          Order Details <span className="text-lg text-gray-400"> items</span>
+          Order Details{" "}
+          <span className="text-lg text-gray-400">
+            ( {calculateTotalQuantity(cartItems)} items)
+          </span>
         </h1>
         <div className="flex justify-between my-1">
           <h1>Bag total</h1>
@@ -155,7 +163,7 @@ const Cart = () => {
         </div>
         <div className="flex justify-between my-1">
           <h1>Bag discount</h1>
-          <h1 className="text-gray-500">₹518</h1>
+          <h1 className="text-gray-500">₹{discount}</h1>
         </div>
         <div className="flex justify-between my-1">
           <h1>Coupon Discount</h1>
@@ -167,10 +175,12 @@ const Cart = () => {
         </div>
         <div className="flex justify-between pt-2 my-4 border-t border-gray-300 ">
           <h1 className="font-semibold">Order Total</h1>
-          <h1 className="font-semibold">₹{totalPrice - 518}</h1>
+          <h1 className="font-semibold">₹{finalTotal}</h1>
         </div>
         <Link to="/shop/Checkout">
-          <button className="w-56 px-6 py-2 my-2 text-center text-white bg-gray-800 rounded-sm">
+          <button
+            onClick={handleProceedToCheckout}
+            className="w-56 px-6 py-2 my-2 text-center text-white bg-gray-800 rounded-sm">
             Proceed to Checkout
           </button>
         </Link>

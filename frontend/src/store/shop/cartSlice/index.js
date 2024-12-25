@@ -3,11 +3,13 @@ import axios from "axios";
 
 const initialState = {
   isLoading: false,
-  cartItems: [],
+  cartItems: (() => {
+    const cartItems = localStorage.getItem("cartItems");
+    return cartItems ? JSON.parse(cartItems) : [];
+  })(),
   error: null,
 };
 
-// Add item to the cart
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
@@ -32,7 +34,6 @@ export const addToCart = createAsyncThunk(
   }
 );
 
-// Fetch all items in the cart
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId, { rejectWithValue }) => {
@@ -46,14 +47,13 @@ export const fetchCartItems = createAsyncThunk(
           },
         }
       );
-      return response.data.data.items || []; // Adjust based on actual response
+      return response.data.data.items || [];
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
-// Delete an item from the cart
 export const deleteCartItems = createAsyncThunk(
   "cart/deleteCartItems",
   async ({ userId, productId }, { rejectWithValue }) => {
@@ -76,16 +76,22 @@ export const deleteCartItems = createAsyncThunk(
   }
 );
 
-// Update cart item quantity
 export const updateCartItemQty = createAsyncThunk(
   "cart/updateCartItemQty",
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
+      const token = localStorage.getItem("token");
+
       const response = await axios.put(
         `http://localhost:5000/api/cart/update-cart`,
-        { userId, productId, quantity }
+        { userId, productId, quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      return response.data;
+      return response.data.data?.items || [];
     } catch (error) {
       return rejectWithValue(
         error.response ? error.response.data : error.message
@@ -94,6 +100,33 @@ export const updateCartItemQty = createAsyncThunk(
   }
 );
 
+export const clearCart = createAsyncThunk(
+  "cart/clearCart",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(
+        `http://localhost:5000/api/cart/clear?userId=${userId}`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        localStorage.removeItem("cartItems");
+
+        return [];
+      } else {
+        throw new Error("Failed to clear the cart");
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 const shopCartSlice = createSlice({
   name: "shopCart",
   initialState,
@@ -102,11 +135,12 @@ const shopCartSlice = createSlice({
     builder
       .addCase(addToCart.pending, (state) => {
         state.isLoading = true;
-        state.error = null; // Clear previous error
+        state.error = null;
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data || action.payload.items; // Adjust based on API response
+        state.cartItems = action.payload.data || action.payload.items || [];
+        localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.isLoading = false;
@@ -129,9 +163,16 @@ const shopCartSlice = createSlice({
       .addCase(deleteCartItems.pending, (state) => {
         state.isLoading = true;
       })
+
       .addCase(deleteCartItems.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data?.items || action.payload.items;
+        const updatedCartItems =
+          action.payload.data?.items ||
+          state.cartItems.filter(
+            (item) => item.productId !== action.meta.arg.productId
+          );
+        state.cartItems = updatedCartItems;
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
       })
       .addCase(deleteCartItems.rejected, (state, action) => {
         state.isLoading = false;
@@ -142,9 +183,19 @@ const shopCartSlice = createSlice({
       })
       .addCase(updateCartItemQty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data || action.payload.items;
+        state.cartItems = action.payload.data?.items || state.cartItems;
+        localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       })
       .addCase(updateCartItemQty.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(clearCart.fulfilled, (state) => {
+        state.isLoading = false;
+        state.cartItems = [];
+        localStorage.setItem("cartItems", JSON.stringify([]));
+      })
+      .addCase(clearCart.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || action.error.message;
       });

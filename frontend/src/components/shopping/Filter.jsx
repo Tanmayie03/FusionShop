@@ -1,13 +1,19 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Filter = ({ categories, setCategories, setSortType }) => {
-  const [showFilter, setShowFilter] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleCategory = (e) => {
-    if (categories.includes(e.target.value)) {
-      setCategories((prev) => prev.filter((item) => item !== e.target.value));
+    const { value, checked } = e.target;
+    if (checked) {
+      setCategories((prevCategories) => [...prevCategories, value]);
     } else {
-      setCategories((prev) => [...prev, e.target.value]);
+      setCategories((prevCategories) =>
+        prevCategories.filter((category) => category !== value)
+      );
     }
   };
 
@@ -15,14 +21,25 @@ const Filter = ({ categories, setCategories, setSortType }) => {
     setSortType(e.target.value);
   };
 
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const selectedCategory = query.get("category");
+    if (selectedCategory) {
+      setCategories([selectedCategory]);
+    }
+  }, [location, setCategories]);
+
+  const handleResetFilters = () => {
+    setCategories([]);
+    navigate("/shop/listing");
+  };
+
   return (
     <div className="rounded-lg shadow-md">
-      <div className="p-4 border-b min-w-64">
+      <div className="p-4 border-b lg:min-w-64">
         <div
-          onClick={() => {
-            setShowFilter(!showFilter);
-          }}
-          className="flex items-center gap-2 text-lg font-semibold">
+          onClick={() => setShowFilter(!showFilter)}
+          className="flex items-center gap-2 text-lg font-semibold cursor-pointer">
           Filters
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -40,13 +57,13 @@ const Filter = ({ categories, setCategories, setSortType }) => {
         </div>
         <div
           className={`border border-gray-300 pl-5 py-3 mt-6 ${
-            showFilter ? "" : " hidden"
+            showFilter ? "" : "hidden"
           } sm:block`}>
           <p className="mb-3 text-sm font-semibold">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light">
             <p className="flex gap-2">
               <input
-                className="w-3 "
+                className="w-3"
                 type="checkbox"
                 value={"men's clothing"}
                 onChange={toggleCategory}
@@ -56,7 +73,7 @@ const Filter = ({ categories, setCategories, setSortType }) => {
             </p>
             <p className="flex gap-2">
               <input
-                className="w-3 "
+                className="w-3"
                 type="checkbox"
                 value={"women's clothing"}
                 onChange={toggleCategory}
@@ -66,17 +83,17 @@ const Filter = ({ categories, setCategories, setSortType }) => {
             </p>
             <p className="flex gap-2">
               <input
-                className="w-3 "
+                className="w-3"
                 type="checkbox"
                 value={"jewelry"}
                 onChange={toggleCategory}
                 checked={categories.includes("jewelry")}
               />{" "}
-              Jewellry
+              Jewelry
             </p>
             <p className="flex gap-2">
               <input
-                className="w-3 "
+                className="w-3"
                 type="checkbox"
                 value={"electronics"}
                 onChange={toggleCategory}
@@ -94,10 +111,17 @@ const Filter = ({ categories, setCategories, setSortType }) => {
           <select
             className="px-2 text-sm border-2 border-gray-300"
             onChange={handleSortChange}>
-            <option value="relevant">Relevent</option>
+            <option value="relevant">Relevant</option>
             <option value="low-high">Low to High</option>
             <option value="high-low">High to Low</option>
           </select>
+        </div>
+        <div className="mt-6">
+          <button
+            className="px-4 py-2 text-sm bg-gray-200 "
+            onClick={handleResetFilters}>
+            Reset Filters
+          </button>
         </div>
       </div>
     </div>

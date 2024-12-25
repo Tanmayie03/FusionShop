@@ -13,7 +13,7 @@ const Form = ({ formControls, onSubmit, formData, setFormData }) => {
       <div className="flex flex-col items-center w-full gap-3 ">
         {formControls.map((controlItem) => (
           <div className="grid w-96" key={controlItem.name}>
-            <label className="mb-1 font-semibold text-gray-700">
+            <label className="mb-1 font-semibold capitalize text-gray-700">
               {controlItem.label}
             </label>
             {controlItem.componentType === "input" && (
@@ -29,7 +29,7 @@ const Form = ({ formControls, onSubmit, formData, setFormData }) => {
         ))}
         <button
           type="submit"
-          className="px-4 py-2 mt-4 font-semibold text-white bg-gray-700 rounded hover:bg-gray-800">
+          className="px-4 py-2 mt-4 font-semibold text-white bg-gray-700  hover:bg-gray-800">
           Submit
         </button>
       </div>

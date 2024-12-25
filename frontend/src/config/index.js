@@ -25,22 +25,22 @@ export const shoppingViewMenu = [
   {
     id: "men's clothing",
     label: "Men",
-    path: "/shop/listing",
+    path: "/shop/listing?category=men's clothing",
   },
   {
     id: "women's clothing",
     label: "Women",
-    path: "/shop/listing",
+    path: "/shop/listing?category=women's clothing",
   },
   {
     id: "jewelry",
     label: "Jewelry",
-    path: "/shop/listing",
+    path: "/shop/listing?category=jewelry",
   },
   {
     id: "electronics",
     label: "Electronics",
-    path: "/shop/listing",
+    path: "/shop/listing?category=electronics",
   },
 ];
 

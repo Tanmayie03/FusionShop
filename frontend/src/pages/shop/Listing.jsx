@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import Filter from "../../components/shopping/Filter";
 import ProductItem from "../../components/shopping/ProductItem";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const Listing = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const location = useLocation();
   const [sortType, setSortType] = useState("relevant");
   const fetchProducts = async () => {
     try {
@@ -20,14 +22,16 @@ const Listing = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
   const applyFiltersAndSorting = () => {
     let updatedProducts = [...products];
-    console.log("Categories selected:", categories);
-    console.log("Initial products:", updatedProducts);
+    const categoryParam = new URLSearchParams(location.search).get("category");
+
+    if (categoryParam) {
+      updatedProducts = updatedProducts.filter(
+        (product) =>
+          product.category.toLowerCase() === categoryParam.toLowerCase()
+      );
+    }
 
     if (categories.length > 0) {
       updatedProducts = updatedProducts.filter((product) => {
@@ -51,20 +55,25 @@ const Listing = () => {
 
     setFilteredProducts(updatedProducts);
   };
-
+  useEffect(() => {
+    fetchProducts();
+  }, []);
   useEffect(() => {
     applyFiltersAndSorting();
-  }, [categories, sortType]);
+  }, [categories, sortType, location]);
 
   return (
-    <div className="flex gap-6 p-4 md:p-6">
+    <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6">
       <Filter
         categories={categories}
         setCategories={setCategories}
         setSortType={setSortType}
+        location={location}
       />
       <div className="">
-        <h1 className="pb-6 text-2xl font-bold ">All products</h1>
+        <h1 className="pb-6 text-2xl text-gray-700 font-semibold ">
+          ALL PRODUCTS
+        </h1>
         <ProductItem products={filteredProducts} />
       </div>
     </div>

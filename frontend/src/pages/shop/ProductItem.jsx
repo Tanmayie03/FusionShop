@@ -12,6 +12,7 @@ const ProductItem = () => {
   );
   const user = useSelector((state) => state.auth.user);
   console.log("User:", user);
+
   const handleAddtoCart = (productId) => {
     console.log(`Adding product ${productId} to cart`);
     dispatch(addToCart({ userId: user.id, productId, quantity: 1 })).then(
@@ -28,13 +29,13 @@ const ProductItem = () => {
 
   return (
     <div>
-      <div className="flex flex-col items-center justify-center lg:items-start lg:flex-row lg:m-8">
+      <div className="flex p-6 md:p-0 flex-col items-center justify-center lg:items-start lg:flex-row lg:m-8">
         <img
           src={product.image}
           alt={product.title}
-          className="object-cover w-24 mr-8 border border-gray-300"
+          className="object-cover hidden md:block w-24 mr-8 border border-gray-300"
         />
-        <div className="w-full lg:w-1/3">
+        <div className=" w-2/3 lg:w-1/3">
           <img
             src={product.image}
             alt={product.title}

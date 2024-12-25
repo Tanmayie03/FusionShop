@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema({
   rating: { type: Number, required: true },
   count: { type: Number, required: true, min: 0 },
 });
-
+productSchema.set("autoIndex", false);
 const productModel = mongoose.model("product", productSchema);
 
 export default productModel;
