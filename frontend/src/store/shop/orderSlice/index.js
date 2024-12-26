@@ -77,6 +77,12 @@ const orderSlice = createSlice({
       .addCase(placeOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.orderDetails = action.payload.data;
+        state.cartItems = []; // Empty the cart on successful order placement
+        localStorage.removeItem("cartItems"); // Clear localStorage
+        // Optionally, store the order details or success message
+        // For example:
+        // state.orderDetails = action.payload;
+        console.log("Order placed successfully:", action.payload);
       })
       .addCase(placeOrder.rejected, (state, action) => {
         state.isLoading = false;

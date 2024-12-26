@@ -22,7 +22,7 @@ const Register = () => {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6  bg-gray-50">
+    <div className="md:w-full md:max-w-md md:mx-auto space-y-6  bg-gray-50">
       <div className="text-center">
         <h1 className="px-6 py-4 text-3xl font-semibold text-center text-white  bg-gray-800">
           SIGN UP
@@ -35,7 +35,7 @@ const Register = () => {
         setFormData={setFormData}
         onSubmit={onSubmit}
       />
-      <div className="pb-6 text-center ">
+      <div className="pb-6  px-4 text-center ">
         Already have an account?
         <span className="px-2 font-bold">
           <Link to="/auth/login" className="text-center underline">

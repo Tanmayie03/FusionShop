@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Form from "../../components/common/Form";
 import { addressFormControls } from "../../config";
 import { addNewAddress } from "../../store/shop/addressSlice";
 import { placeOrder } from "../../store/shop/orderSlice";
 import { useNavigate } from "react-router-dom";
-import { clearCart, fetchCartItems } from "../../store/shop/cartSlice";
+import { deleteCartItems } from "../../store/shop/cartSlice";
+import { fetchCartItems } from "../../store/shop/cartSlice";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const initialFormData = {
   address: "",
@@ -72,25 +75,31 @@ const Checkout = () => {
       paymentMethod,
     };
     dispatch(placeOrder(orderData))
-      .then((response) => {
-        cartItems({});
-        dispatch(clearCart(user.id)).then(() => {
-          alert("Order placed successfully");
-          console.log("Cart after clear:", localStorage.getItem("cartItems"));
-          dispatch(fetchCartItems(user.id));
-          navigate("/shop/Orders");
-        });
+      .then(() => {
+        if (userId && cartItems.length > 0) {
+          cartItems.forEach((item) => {
+            dispatch(deleteCartItems({ userId, productId: item.productId }));
+            toast.success("Order placed successfully!", {
+              position: "bottom-right",
+              autoClose: 3000,
+            });
+          });
+        }
+        navigate("/shop/success");
       })
       .catch((error) => {
         console.error("Failed to place order", error);
       });
   }
+  useEffect(() => {
+    dispatch(fetchCartItems(userId));
+  }, [dispatch]);
 
   const calculateTotalQuantity = (items) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
   return (
-    <div className="flex justify-between lg:px-4  ">
+    <div className="flex lg:flex-row flex-col justify-between px-6 lg:px-4  ">
       <div className="lg:w-fit p-6 bg-white">
         <h2 className="pb-2 mb-4 text-2xl font-semibold text-gray-700 border-b">
           DELIVERY INFORMATION
@@ -104,7 +113,9 @@ const Checkout = () => {
           required={true}
         />
       </div>
-      <div className="w-1/2 p-6 ">
+      <ToastContainer position="bottom-right" autoClose={2000} />
+
+      <div className="md:w-1/2 p-6 ">
         <p className="pb-2 text-2xl font-medium text-gray-700 border-b ">
           CART TOTAL
         </p>

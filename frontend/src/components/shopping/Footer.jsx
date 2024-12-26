@@ -69,9 +69,8 @@ const Footer = () => {
           </ul>
         </div>
       </div>
-      <div className="grid items-center justify-around grid-cols-2 pt-4 text-white border-t border-gray-600 cursor-pointer lg:grid-cols-3">
-        <img src="./images/fusionshop-white.png" className="w-12" />
-
+      <div className="grid items-center justify-between grid-cols-2 pt-4 text-white border-t border-gray-600 cursor-pointer lg:grid-cols-3">
+        <p className="text-xl font-semibold">FUSHIONSHOP</p>
         <p className="hidden md:block lg:w-80">
           @2024 FusionShop Ltd. All rights reserved
         </p>

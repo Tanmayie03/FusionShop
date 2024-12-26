@@ -24,29 +24,13 @@ const Listing = () => {
 
   const applyFiltersAndSorting = () => {
     let updatedProducts = [...products];
-    const categoryParam = new URLSearchParams(location.search).get("category");
-
-    if (categoryParam) {
-      updatedProducts = updatedProducts.filter(
-        (product) =>
-          product.category.toLowerCase() === categoryParam.toLowerCase()
+    if (categories.length > 0) {
+      updatedProducts = updatedProducts.filter((product) =>
+        categories.includes(product.category)
       );
     }
 
-    if (categories.length > 0) {
-      updatedProducts = updatedProducts.filter((product) => {
-        console.log(
-          "Checking product:",
-          product.title,
-          "Category:",
-          product.category
-        );
-
-        return categories.some((category) => category === product.category);
-      });
-    }
-
-    console.log("Filtered products after category filter:", updatedProducts);
+    // Sorting
     if (sortType === "low-high") {
       updatedProducts.sort((a, b) => a.price - b.price);
     } else if (sortType === "high-low") {
@@ -71,7 +55,7 @@ const Listing = () => {
         location={location}
       />
       <div className="">
-        <h1 className="pb-6 text-2xl text-gray-700 font-semibold ">
+        <h1 className="pb-6 text-xl md:text-2xl text-gray-700 font-semibold ">
           ALL PRODUCTS
         </h1>
         <ProductItem products={filteredProducts} />

@@ -21,7 +21,13 @@ export const registerFormControls = [
     type: "password",
   },
 ];
+
 export const shoppingViewMenu = [
+  {
+    id: "all",
+    label: "All",
+    path: "/shop/listing",
+  },
   {
     id: "men's clothing",
     label: "Men",

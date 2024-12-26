@@ -18,13 +18,15 @@ import { useSelector } from "react-redux";
 import ProductItem from "./pages/shop/ProductItem";
 import Cart from "./components/shopping/Cart";
 import Orders from "./pages/shop/Orders";
+import "./index.css";
+import Success from "./pages/shop/Success";
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  console.log("Auth state:", { user, isAuthenticated });
+  // console.log("Auth state:", { user, isAuthenticated });
   return (
     <Router>
-      <div className="flex flex-col overflow-hidden bg-white">
+      <div className="flex flex-col font-lato overflow-hidden bg-white">
         <Routes>
           <Route
             path="/auth"
@@ -47,11 +49,13 @@ function App() {
             <Route path="" element={<Home />} />
             <Route path="listing" element={<Listing />} />
             <Route path=":productId" element={<ProductItem />} />
-            <Route path="account" element={<Accounts />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="cart" element={<Cart />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="account" element={<Accounts />} />
+            <Route path="success" element={<Success />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

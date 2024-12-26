@@ -33,7 +33,7 @@ const Login = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col pb-8  w-[400px] bg-gray-50">
+      className="flex flex-col pb-8   md:w-[400px] bg-gray-50">
       <h1 className="w-full px-6 py-4 text-3xl font-semibold text-center text-white  bg-gray-800 ">
         LOGIN
       </h1>
@@ -68,7 +68,7 @@ const Login = () => {
         className="px-6 py-2 mx-auto my-2 font-semibold text-white  bg-gray-800 w-fit">
         Login
       </button>
-      <p className="mt-2 lg:px-6">
+      <p className="mt-2 px-4 lg:px-6">
         {" "}
         Dont have an account?
         <Link

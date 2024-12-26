@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductById } from "../../store/shop/productsSlice";
 import { addToCart } from "../../store/shop/cartSlice";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const ProductItem = () => {
   const { productId } = useParams();
   const dispatch = useDispatch();
@@ -11,13 +12,14 @@ const ProductItem = () => {
     (state) => state.shoppingProducts
   );
   const user = useSelector((state) => state.auth.user);
-  console.log("User:", user);
+  // console.log("User:", user);
 
   const handleAddtoCart = (productId) => {
     console.log(`Adding product ${productId} to cart`);
     dispatch(addToCart({ userId: user.id, productId, quantity: 1 })).then(
       (data) => console.log(data)
     );
+    toast.success("Item added to cart");
   };
   useEffect(() => {
     dispatch(fetchProductById(productId));
@@ -29,6 +31,7 @@ const ProductItem = () => {
 
   return (
     <div>
+      <ToastContainer position="bottom-right" autoClose={2000} />
       <div className="flex p-6 md:p-0 flex-col items-center justify-center lg:items-start lg:flex-row lg:m-8">
         <img
           src={product.image}

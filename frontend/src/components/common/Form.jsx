@@ -10,9 +10,9 @@ const Form = ({ formControls, onSubmit, formData, setFormData }) => {
   };
   return (
     <form onSubmit={handleSubmit} className="w-full ">
-      <div className="flex flex-col items-center w-full gap-3 ">
+      <div className="flex flex-col items-center md:w-full gap-3 ">
         {formControls.map((controlItem) => (
-          <div className="grid w-96" key={controlItem.name}>
+          <div className="grid w-80 md:w-96" key={controlItem.name}>
             <label className="mb-1 font-semibold capitalize text-gray-700">
               {controlItem.label}
             </label>

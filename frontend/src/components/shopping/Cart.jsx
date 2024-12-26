@@ -5,14 +5,15 @@ import {
   fetchCartItems,
   updateCartItemQty,
 } from "../../store/shop/cartSlice";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 const Cart = () => {
-  const { cartItems, isLoading, error } = useSelector(
-    (state) => state.shopCart
-  );
+  const cartItems = useSelector((state) => state.shopCart.cartItems);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const userId = user?.id || localStorage.getItem("userId");
 
   const calculateTotalPrice = (items) => {
@@ -20,36 +21,61 @@ const Cart = () => {
       ? items.reduce((total, item) => total + item.price * item.quantity, 0)
       : 0;
   };
+
   const calculateItemPrice = (item) => {
     return (item.price * item.quantity).toFixed(2);
   };
-  const totalPrice = calculateTotalPrice(cartItems);
-  const discount = 518;
-  const finalTotal = totalPrice - discount;
+
+  const totalPrice = calculateTotalPrice(cartItems).toFixed(2);
+  const discount = 89;
+  const finalTotal = totalPrice !== 0 ? totalPrice - discount : 0;
+
+  const calculateTotalQuantity = (items) => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  };
 
   const handleCartItemDelete = (getCartItem) => {
     if (userId) {
       dispatch(
-        deleteCartItems({ userId: userId, productId: getCartItem?.productId })
+        deleteCartItems({ userId: userId, productId: getCartItem.productId })
       );
     } else {
       console.error("User ID is missing for deletion");
     }
   };
 
-  const handleUpdateQuantity = (item, action) => {
-    const newQuantity =
-      action === "increase" ? item.quantity + 1 : item.quantity - 1;
-    if (newQuantity > 0 && newQuantity <= item.stock) {
-      dispatch(
-        updateCartItemQty({
-          userId,
-          productId: item.productId,
-          quantity: newQuantity,
-        })
-      );
-    } else {
-      console.error("Quantity exceeds stock or is less than 1");
+  const handleUpdateQuantity = async (item, action) => {
+    const currentQuantity = item.quantity;
+    let newQuantity;
+
+    if (action === "increase") {
+      if (currentQuantity >= 1) {
+        newQuantity = currentQuantity + 1;
+        await dispatch(
+          updateCartItemQty({
+            userId,
+            productId: item.productId,
+            quantity: newQuantity,
+          })
+        );
+        dispatch(fetchCartItems(userId));
+      } else {
+        toast.error("Quantity cannot be less than 1.");
+      }
+    } else if (action === "decrease") {
+      if (currentQuantity > 1) {
+        newQuantity = currentQuantity - 1;
+        await dispatch(
+          updateCartItemQty({
+            userId,
+            productId: item.productId,
+            quantity: newQuantity,
+          })
+        );
+        dispatch(fetchCartItems(userId));
+      } else {
+        toast.error("Quantity cannot be less than 1.");
+      }
     }
   };
 
@@ -61,30 +87,45 @@ const Cart = () => {
     }
   }, [dispatch, userId]);
 
-  if (isLoading) return <p>Loading...</p>;
-
-  const calculateTotalQuantity = (items) => {
-    return items.reduce((total, item) => total + item.quantity, 0);
-  };
   const items = Array.isArray(cartItems) ? cartItems : [];
 
   const handleProceedToCheckout = () => {
-    console.log("Proceeding to Checkout");
+    console.log("cartItems:", cartItems);
+
+    if (!cartItems || cartItems.length === 0) {
+      console.log("Cart is empty.");
+      toast.error("Your cart is empty! Add items before proceeding.");
+      return;
+    }
+
+    console.log("Proceeding to checkout...");
+    navigate("/shop/checkout");
   };
 
   return (
-    <div className="flex flex-col justify-between gap-8 px-10 py-6 lg:flex-row">
+    <div className="flex flex-col justify-between gap-8 px-6 md:px-10 py-6 lg:flex-row">
+      <ToastContainer />
       <div className="flex flex-col lg:w-1/2">
         <h1 className="text-2xl font-semibold text-gray-700">YOUR CART</h1>
         {items.length === 0 ? (
-          <p>Your cart is empty.</p>
+          <div className="py-12 flex-col flex items-center ">
+            <img
+              src="https://res.cloudinary.com/dy7zpv1ij/image/upload/v1735158615/Screenshot_2024-12-26_015910_q6ebqe.png"
+              className=" grayscale w-1/2 opacity-70"
+            />
+            <p>Your cart is empty.</p>
+          </div>
         ) : (
           items.map((item) => (
             <div
               className="flex justify-between gap-4 py-4 border-b"
               key={item.productId}>
               <div className="flex  gap-4">
-                <img src={item.image} className="w-1/4" alt={item.title} />
+                <img
+                  src={item.image}
+                  className="md:w-1/4 w-40 h-40"
+                  alt={item.title}
+                />
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between w-full">
                     <p className="pb-2 text-lg font-semibold">{item.title}</p>
@@ -177,13 +218,13 @@ const Cart = () => {
           <h1 className="font-semibold">Order Total</h1>
           <h1 className="font-semibold">₹{finalTotal}</h1>
         </div>
-        <Link to="/shop/Checkout">
-          <button
-            onClick={handleProceedToCheckout}
-            className="w-56 px-6 py-2 my-2 text-center text-white bg-gray-800 rounded-sm">
-            Proceed to Checkout
-          </button>
-        </Link>
+
+        <button
+          onClick={handleProceedToCheckout}
+          className="w-56 px-6 py-2 my-2 text-center text-white bg-gray-800 rounded-sm">
+          Proceed to Checkout
+        </button>
+
         <h1 className="pb-4 mt-16 text-sm">
           The price and availability of items at cartify.com are subject to
           change. The Cart is a temporary place to store a list of your items

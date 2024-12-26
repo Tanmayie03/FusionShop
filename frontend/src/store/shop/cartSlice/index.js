@@ -25,11 +25,16 @@ export const addToCart = createAsyncThunk(
           },
         }
       );
-      return response.data;
+
+      if (response.status === 200) {
+        localStorage.removeItem("cartItems");
+        return [];
+      } else {
+        throw new Error("Failed to clear the cart");
+      }
     } catch (error) {
-      return rejectWithValue(
-        error.response ? error.response.data : error.message
-      );
+      console.error(error);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -75,13 +80,12 @@ export const deleteCartItems = createAsyncThunk(
     }
   }
 );
-
 export const updateCartItemQty = createAsyncThunk(
   "cart/updateCartItemQty",
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
-    try {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
+    try {
       const response = await axios.put(
         `http://localhost:5000/api/cart/update-cart`,
         { userId, productId, quantity },
@@ -93,21 +97,18 @@ export const updateCartItemQty = createAsyncThunk(
       );
       return response.data.data?.items || [];
     } catch (error) {
-      return rejectWithValue(
-        error.response ? error.response.data : error.message
-      );
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
-export const clearCart = createAsyncThunk(
-  "cart/clearCart",
+export const clearCartThunk = createAsyncThunk(
+  "cart/clearCartThunk",
   async (userId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.delete(
         `http://localhost:5000/api/cart/clear?userId=${userId}`,
-
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,7 +118,6 @@ export const clearCart = createAsyncThunk(
 
       if (response.status === 200) {
         localStorage.removeItem("cartItems");
-
         return [];
       } else {
         throw new Error("Failed to clear the cart");
@@ -127,6 +127,33 @@ export const clearCart = createAsyncThunk(
     }
   }
 );
+// export const clearCart = createAsyncThunk(
+//   "cart/clearCart",
+//   async (userId, { rejectWithValue }) => {
+//     try {
+//       const token = localStorage.getItem("token");
+//       const response = await axios.delete(
+//         `http://localhost:5000/api/cart/clear?userId=${userId}`,
+
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       if (response.status === 200) {
+//         localStorage.removeItem("cartItems");
+
+//         return [];
+//       } else {
+//         throw new Error("Failed to clear the cart");
+//       }
+//     } catch (error) {
+//       return rejectWithValue(error.message);
+//     }
+//   }
+// );
 const shopCartSlice = createSlice({
   name: "shopCart",
   initialState,
@@ -139,7 +166,7 @@ const shopCartSlice = createSlice({
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cartItems = action.payload.data || action.payload.items || [];
+        state.cartItems = action.payload || state.cartItems;
         localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       })
       .addCase(addToCart.rejected, (state, action) => {
@@ -166,14 +193,13 @@ const shopCartSlice = createSlice({
 
       .addCase(deleteCartItems.fulfilled, (state, action) => {
         state.isLoading = false;
-        const updatedCartItems =
+        state.cartItems =
           action.payload.data?.items ||
           state.cartItems.filter(
             (item) => item.productId !== action.meta.arg.productId
           );
-        state.cartItems = updatedCartItems;
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
       })
+
       .addCase(deleteCartItems.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || action.error.message;
@@ -182,24 +208,33 @@ const shopCartSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(updateCartItemQty.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.cartItems = action.payload.data?.items || state.cartItems;
-        localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
+        state.cartItems = action.payload;
       })
       .addCase(updateCartItemQty.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || action.error.message;
       })
-      .addCase(clearCart.fulfilled, (state) => {
+      .addCase(clearCartThunk.fulfilled, (state, action) => {
+        console.log("Cart cleared in Redux state");
         state.isLoading = false;
         state.cartItems = [];
-        localStorage.setItem("cartItems", JSON.stringify([]));
+        localStorage.setItem("cartItems", JSON.stringify([])); // Clear localStorage
       })
-      .addCase(clearCart.rejected, (state, action) => {
+      .addCase(clearCartThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || action.error.message;
       });
   },
+  // .addCase(clearCart.fulfilled, (state, action) => {
+  //   state.isLoading = false;
+  //   state.cartItems = action.payload.data?.items || state.cartItems;
+  //   state.cartItems = [];
+  //   localStorage.setItem("cartItems", JSON.stringify([]));
+  // })
+  // .addCase(clearCart.rejected, (state, action) => {
+  //   state.isLoading = false;
+  //   state.error = action.payload || action.error.message;
+  // });
 });
-
+// export const { clearCart } = shopCartSlice.actions;
 export default shopCartSlice.reducer;
