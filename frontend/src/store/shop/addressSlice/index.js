@@ -10,7 +10,7 @@ export const addNewAddress = createAsyncThunk(
   "/address/addNewAddress",
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/address/add",
+      "https://fusionshop-backend.onrender.com/api/address/add",
       formData,
       { headers: { "Content-Type": "application/json" } }
     );

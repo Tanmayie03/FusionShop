@@ -17,7 +17,7 @@ export const addToCart = createAsyncThunk(
       const data = { userId, productId, quantity };
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:5000/api/cart/add",
+        "https://fusionshop-backend.onrender.com/api/cart/add",
         data,
         {
           headers: {
@@ -45,7 +45,7 @@ export const fetchCartItems = createAsyncThunk(
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/cart/get/${userId}`,
+        `https://fusionshop-backend.onrender.com/api/cart/get/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ export const deleteCartItems = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axios.delete(
-        `http://localhost:5000/api/cart/${userId}/${productId}`,
+        `https://fusionshop-backend.onrender.com/api/cart/${userId}/${productId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ export const updateCartItemQty = createAsyncThunk(
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/cart/update-cart`,
+        `https://fusionshop-backend.onrender.com/api/cart/update-cart`,
         { userId, productId, quantity },
         {
           headers: {
@@ -108,7 +108,7 @@ export const clearCartThunk = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axios.delete(
-        `http://localhost:5000/api/cart/clear?userId=${userId}`,
+        `https://fusionshop-backend.onrender.com/api/cart/clear?userId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ export const clearCartThunk = createAsyncThunk(
 //     try {
 //       const token = localStorage.getItem("token");
 //       const response = await axios.delete(
-//         `http://localhost:5000/api/cart/clear?userId=${userId}`,
+//         `https://fusionshop-backend.onrender.com/api/cart/clear?userId=${userId}`,
 
 //         {
 //           headers: {

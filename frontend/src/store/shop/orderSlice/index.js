@@ -14,7 +14,7 @@ export const placeOrder = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:5000/api/order/placeOrder",
+        "https://fusionshop-backend.onrender.com/api/order/placeOrder",
         orderData,
         {
           headers: {
@@ -41,7 +41,7 @@ export const fetchOrders = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `http://localhost:5000/api/order/fetchOrders?userId=${userId}`,
+        `https://fusionshop-backend.onrender.com/api/order/fetchOrders?userId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

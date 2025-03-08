@@ -13,7 +13,7 @@ export const fetchProductById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/product/singleProduct/${id}`
+        `https://fusionshop-backend.onrender.com/api/product/singleProduct/${id}`
       );
       const data = await response.data.data;
       return data;
