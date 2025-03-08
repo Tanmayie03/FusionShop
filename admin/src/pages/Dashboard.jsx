@@ -15,7 +15,7 @@ const Dashboard = () => {
     }
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/product/display",
+        "https://fusionshop-backend.onrender.com/api/product/display",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/product/remove/${id}`, // Include product ID in URL
+        `https://fusionshop-backend.onrender.com/api/product/remove/${id}`, // Include product ID in URL
         {
           headers: {
             Authorization: `Bearer ${token}`,
