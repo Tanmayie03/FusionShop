@@ -19,22 +19,20 @@ const Login = () => {
 
   async function onSubmit(e) {
     e.preventDefault();
-    console.log("Login with:", formData);
-    dispatch(loginUser(formData)).then((response) => {
-      if (response?.payload?.success) {
-        console.log("Login successful! Navigating to the shop...");
-        navigate("/shop");
-      } else {
-        console.error("Login failed:", response?.payload);
-        alert("Invalid login credentials");
-      }
-    });
+    const response = await dispatch(loginUser(formData));
+
+    if (loginUser.rejected.match(response)) {
+      alert(response.payload || "Login failed");
+    } else {
+      navigate("/shop");
+    }
   }
+
   return (
     <form
       onSubmit={onSubmit}
       className="flex flex-col pb-8   md:w-[400px] bg-gray-50">
-      <h1 className="w-full px-6 py-4 text-3xl font-semibold text-center text-white  bg-gray-800 ">
+      <h1 className="w-full px-6 py-4 text-3xl font-semibold text-center text-white bg-gray-800 ">
         LOGIN
       </h1>
       <div className="flex flex-col mx-4 mt-8">
@@ -65,14 +63,14 @@ const Login = () => {
 
       <button
         type="submit"
-        className="px-6 py-2 mx-auto my-2 font-semibold text-white  bg-gray-800 w-fit">
+        className="px-6 py-2 mx-auto my-2 font-semibold text-white bg-gray-800 w-fit">
         Login
       </button>
-      <p className="mt-2 px-4 lg:px-6">
+      <p className="px-4 mt-2 lg:px-6">
         {" "}
         Dont have an account?
         <Link
-          className="ml-2 font-medium text-primary underline"
+          className="ml-2 font-medium underline text-primary"
           to="/auth/register">
           Register
         </Link>

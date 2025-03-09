@@ -14,7 +14,6 @@ import Home from "./pages/shop/Home";
 import Accounts from "./pages/shop/Accounts";
 import Listing from "./pages/shop/Listing";
 import Checkout from "./pages/shop/Checkout";
-import CheckAuth from "./components/common/CheckAuth";
 import ProductItem from "./pages/shop/ProductItem";
 import Cart from "./components/shopping/Cart";
 import Orders from "./pages/shop/Orders";
@@ -28,41 +27,71 @@ function App() {
     <Router basename="/">
       <div className="flex flex-col overflow-hidden bg-white font-lato">
         <Routes>
-          {/* Redirect root to /shop */}
           <Route path="/" element={<Navigate to="/shop" replace />} />
 
-          {/* Auth Routes */}
-          <Route
-            path="/auth"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-                <Layout />
-              </CheckAuth>
-            }>
+          <Route path="/auth" element={<Layout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
           </Route>
 
-          {/* Shop Routes */}
-          <Route
-            path="/shop"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-                <ShopLayout />
-              </CheckAuth>
-            }>
+          <Route path="/shop" element={<ShopLayout />}>
             <Route index element={<Home />} />
             <Route path="listing" element={<Listing />} />
             <Route path=":productId" element={<ProductItem />} />
-            <Route path="checkout" element={<Checkout />} />
-            <Route path="cart" element={<Cart />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="account" element={<Accounts />} />
-            <Route path="success" element={<Success />} />
+
+            <Route
+              path="checkout"
+              element={
+                isAuthenticated ? (
+                  <Checkout />
+                ) : (
+                  <Navigate to="/auth/login" replace />
+                )
+              }
+            />
+            <Route
+              path="cart"
+              element={
+                isAuthenticated ? (
+                  <Cart />
+                ) : (
+                  <Navigate to="/auth/login" replace />
+                )
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                isAuthenticated ? (
+                  <Orders />
+                ) : (
+                  <Navigate to="/auth/login" replace />
+                )
+              }
+            />
+            <Route
+              path="account"
+              element={
+                isAuthenticated ? (
+                  <Accounts />
+                ) : (
+                  <Navigate to="/auth/login" replace />
+                )
+              }
+            />
+            <Route
+              path="success"
+              element={
+                isAuthenticated ? (
+                  <Success />
+                ) : (
+                  <Navigate to="/auth/login" replace />
+                )
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Route>
 
-          {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
