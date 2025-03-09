@@ -13,7 +13,7 @@ const Listing = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/product/displayProducts"
+        "https://fusionshop-backend.onrender.com/api/product/displayProducts"
       );
       setProducts(response.data.data);
       setFilteredProducts(response.data.data);
@@ -47,7 +47,7 @@ const Listing = () => {
   }, [categories, sortType, location]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6">
+    <div className="flex flex-col gap-6 p-4 lg:flex-row md:p-6">
       <Filter
         categories={categories}
         setCategories={setCategories}
@@ -55,7 +55,7 @@ const Listing = () => {
         location={location}
       />
       <div className="">
-        <h1 className="pb-6 text-xl md:text-2xl text-gray-700 font-semibold ">
+        <h1 className="pb-6 text-xl font-semibold text-gray-700 md:text-2xl ">
           ALL PRODUCTS
         </h1>
         <ProductItem products={filteredProducts} />
