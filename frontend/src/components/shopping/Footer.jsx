@@ -1,7 +1,8 @@
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <div className="p-8 bg-gray-800">
-      <div className="grid justify-around gap-4 grid-cols-2 pb-8 lg:grid-cols-6">
+      <div className="grid justify-around grid-cols-2 gap-4 pb-8 lg:grid-cols-6">
         <div className="flex flex-col">
           <h1 className="py-2 text-gray-400">ABOUT</h1>
           <ul className="text-sm text-white cursor-pointer">
@@ -13,7 +14,7 @@ const Footer = () => {
             <li className="hover:text-gray-300">Information</li>
           </ul>
         </div>
-        <div className="flex  flex-col">
+        <div className="flex flex-col">
           <h1 className="py-2 text-gray-400">HELP</h1>
           <ul className="text-sm text-white cursor-pointer">
             <li className="hover:text-gray-300">Payments</li>
@@ -70,9 +71,12 @@ const Footer = () => {
         </div>
       </div>
       <div className="grid items-center justify-between grid-cols-2 pt-4 text-white border-t border-gray-600 cursor-pointer lg:grid-cols-3">
-        <p className="text-xl font-semibold">FUSHIONSHOP</p>
+        <img
+          src="https://res.cloudinary.com/dy7zpv1ij/image/upload/v1741776409/image-removebg-preview_8_e8m72r.png"
+          className="w-36 invert"
+        />{" "}
         <p className="hidden md:block lg:w-80">
-          @2024 FusionShop Ltd. All rights reserved
+          © {currentYear} FusionShop Ltd. All rights reserved
         </p>
         <p className="text-sm">Terms of Use | Cookie & Privacy Policy</p>
       </div>

@@ -16,6 +16,7 @@ export const registerUser = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      console.error("Backend error:", error.response?.data || error.message); // Log error
       return rejectWithValue(error.response?.data || "Registration failed");
     }
   }

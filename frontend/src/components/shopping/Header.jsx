@@ -7,7 +7,7 @@ import { fetchCartItems } from "../../store/shop/cartSlice";
 
 function MenuItems() {
   return (
-    <nav className="flex text-gray-700 flex-col w-full gap-4 bg-white lg:flex-row lg:gap-8 lg:bg-transparent lg:mb-0">
+    <nav className="flex flex-col w-full gap-4 text-gray-700 bg-white lg:flex-row lg:gap-8 lg:bg-transparent lg:mb-0">
       {shoppingViewMenu.map((menuItem) => (
         <Link
           className="text-sm font-bold"
@@ -46,25 +46,13 @@ const Header = () => {
   }, [dispatch]);
 
   return (
-    <div className="sticky top-0 z-40 text-gray-700 w-full border-b shadow-md bg-gray-50 ">
+    <div className="sticky top-0 z-40 w-full text-gray-700 border-b shadow-md bg-gray-50 ">
       <div className="flex items-center justify-between h-16 px-4 md:px-6 lg:px-10">
         <Link to="/shop" className="flex items-center ">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-            stroke="currentColor"
-            className="size-6">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-            />
-          </svg>
-          <span className="pl-2 text-xl font-bold text-gray-700">
-            FUSHIONSHOP
-          </span>
+          <img
+            src="https://res.cloudinary.com/dy7zpv1ij/image/upload/v1741776409/image-removebg-preview_8_e8m72r.png"
+            className="w-36"
+          />
         </Link>
 
         <div className="hidden lg:flex lg:items-center lg:gap-6">
@@ -104,7 +92,7 @@ const Header = () => {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="size-6 relative">
+              className="relative size-6">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

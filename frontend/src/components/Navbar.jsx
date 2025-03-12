@@ -5,7 +5,7 @@ const Navbar = () => {
         <div className="flex">
           <img src="./images/cartify.png" className="w-12 mt-1" />
         </div>
-        <div className="flex p-2 font-semibold  gap-x-10 text-slate-800">
+        <div className="flex p-2 font-semibold gap-x-10 text-slate-800">
           <h1 className="py-1 border-b-2 border-transparent cursor-pointer hover:border-slate-800 ">
             Men
           </h1>
@@ -34,7 +34,7 @@ const Navbar = () => {
           />
         </div>
         <div className="hidden lg:block">
-          <div className="flex  lg:items-end">
+          <div className="flex lg:items-end">
             <div className="flex flex-col items-center ">
               <p className="absolute top-0 px-1 text-[10px] bg-red-600 rounded-full text-white right-[185px]">
                 10
@@ -105,7 +105,7 @@ const Navbar = () => {
             <rect y="70" width="100" height="10" rx="5" fill="#333" />
           </svg>
           <div className="relative">
-            <div className="absolute top-0 right-0 z-50 flex flex-col p-2 bg-white  lg:bg-none lg:items-end">
+            <div className="absolute top-0 right-0 z-50 flex flex-col p-2 bg-white lg:bg-none lg:items-end">
               <div className="flex flex-col items-center py-2 ">
                 <p className="absolute top-0 px-1 text-[10px] bg-red-600 rounded-full text-white left-8">
                   .
@@ -164,7 +164,7 @@ const Navbar = () => {
         </button>
       </div>
       {/* <div className="flex justify-between ">
-        <div className="flex p-2 text-sm text-white  gap-x-6 bg-slate-800">
+        <div className="flex p-2 text-sm text-white gap-x-6 bg-slate-800">
           <h1 className="py-1 border-b-2 border-transparent hover:border-white ">
             Men
           </h1>

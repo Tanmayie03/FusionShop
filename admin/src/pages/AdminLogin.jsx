@@ -10,7 +10,7 @@ const AdminLogin = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/admin",
+        "https://fusionshop-backend.onrender.com/api/user/admin",
         {
           email,
           password,

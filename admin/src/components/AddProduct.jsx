@@ -28,7 +28,7 @@ const AddProduct = ({ initialData, onClose, onSubmitSuccess }) => {
     const token = localStorage.getItem("adminToken");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/product/add",
+        "https://fusionshop-backend.onrender.com/api/product/add",
         formData,
         {
           headers: {
